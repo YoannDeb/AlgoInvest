@@ -1,4 +1,4 @@
-from itertools import combinations, combinations_with_replacement, permutations
+from itertools import combinations
 import time
 
 
@@ -27,6 +27,45 @@ def elapsed_time_formatted(begin_time):
     )
 
 
+def convert_dict_to_price_list(dataset):
+    price_list2 = []
+    for key in dataset:
+        price_list2.append((key, dataset[key][0]))
+    return price_list2
+
+
+def sorted_price_list(price_list2):
+    price_list2.sort(key=lambda action1: action1[1])
+    return price_list2
+
+
+def calculate_max_size_wallet_length(price_list_ordered):
+    max_size_wallet = []
+    total_cost2 = 0
+    for action in price_list_ordered:
+        total_cost2 += action[1]
+        max_size_wallet.append(action)
+        if total_cost2 > 500:
+            total_cost2 -= action[1]
+            max_size_wallet.pop()
+    return len(max_size_wallet)
+
+
+def calculate_min_size_wallet_length(price_list_ordered):
+    price_list_ordered.reverse()
+    max_size_wallet = []
+    total_cost2 = 0
+    for action in price_list_ordered:
+        total_cost2 += action[1]
+
+        if total_cost2 > 500:
+            total_cost2 -= action[1]
+        else:
+            max_size_wallet.append(action)
+    price_list_ordered.reverse()
+    return len(max_size_wallet)
+
+
 base_dataset = {
     "Action-1": (20, 5),
     "Action-2": (30, 10),
@@ -50,26 +89,22 @@ base_dataset = {
     "Action-20": (114, 18)
 }
 
-# all_possible_16_combinations = combinations(base_dataset, 20)
+sorted_list = sorted_price_list(convert_dict_to_price_list(base_dataset))
+max_list = calculate_max_size_wallet_length(sorted_list)
+min_list = calculate_min_size_wallet_length(sorted_list)
 
-# print(all_possible_16_combinations)
 all_combinations = []
 final_combinations = []
 start_all = time.perf_counter()
-for i in range(20, 1, -1):
+for i in range(max_list, (min_list - 1), -1):
     start_number = time.perf_counter()
-    j = i
-    print(i)
-    print(i)
-    print(i)
     all_possible_combinations = combinations(base_dataset, i)
     all_possible_combinations_with_ROI = []
     for combination in all_possible_combinations:
-        # print(combination)
         total_ROI = 0.0
         total_cost = 0.0
         final_combination = []
-        # Calculate global ROI
+        # Calculate global ROI of wallet
         for element in combination:
             total_cost += base_dataset[element][0]
             if total_cost > 500:
@@ -82,29 +117,10 @@ for i in range(20, 1, -1):
         if final_combination_with_ROI not in all_combinations:
             all_combinations.append(final_combination_with_ROI)
 
-    print(f"resultats {i}")
+    print(f"résultats {i} :")
     print("sans doublons:")
     print(len(all_combinations))
 
-    # all_possible_16_combinations_with_ROI = list(set(all_possible_16_combinations_with_ROI))
-
-    # all_possible_16_combinations_with_ROI.sort(key=lambda combi: combi[2], reverse=True)
-
-    # if len(all_possible_16_combinations_with_ROI) > 10:
-    #     for j in range(0, 10):
-    #         print(all_possible_16_combinations_with_ROI[j])
-    #     print()
-    #     for j in range(10, 0, -1):
-    #         print(all_possible_16_combinations_with_ROI[-j])
-    # else:
-    #     for combination in all_possible_16_combinations_with_ROI:
-    #         print(combination)
-    # print()
-    # print("longueur du meilleur:")
-    # print(len(all_possible_16_combinations_with_ROI[0][0]))
-    # all_combinations.extend(all_possible_16_combinations_with_ROI)
-    print()
-    print("last one i")
     print(i)
     print("duration:")
     print(elapsed_time_formatted(start_number))
@@ -113,29 +129,25 @@ for i in range(20, 1, -1):
     print(elapsed_time_formatted(start_all))
     print()
 
-# for combination in all_combinations:
-#     if combination not in final_combinations:
-#         final_combinations.append(combination)
-
 print("LAST RESULTS")
-print(len(final_combinations))
+print(len(all_combinations))
 
-final_combinations.sort(key=lambda combi: combi[2], reverse=True)
+all_combinations.sort(key=lambda combi: combi[2], reverse=True)
 
 for i in range(0, 10):
     print("10 meilleurs :")
-    print(final_combinations[i])
+    print(all_combinations[i])
 
 print()
 
 for i in range(10, 0, -1):
     print("10 pires :")
-    print(final_combinations[-i])
+    print(all_combinations[-i])
 
 print("longueur du meilleur: ")
-print(len(final_combinations[0][0]))
+print(len(all_combinations[0][0]))
 print("Le grand gagnant est:")
-print(final_combinations[0])
+print(all_combinations[0])
 print()
 print("total_duration:")
 print(elapsed_time_formatted(start_all))
