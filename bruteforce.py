@@ -7,7 +7,7 @@ def factorielle(n):
         return 1
     else:
         f = 1
-        for k in range(2,n+1):
+        for k in range(2, n+1):
             f = f * k
         return f
 
