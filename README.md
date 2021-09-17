@@ -1,0 +1,2 @@
+# AlgoInvest
+Training program
