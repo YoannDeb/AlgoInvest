@@ -46,10 +46,10 @@ def calculate_max_size_wallet_length(price_list_ordered):
     total_cost2 = 0
     for action in price_list_ordered:
         total_cost2 += action[1]
-        max_size_wallet.append(action)
         if total_cost2 > 500:
             total_cost2 -= action[1]
-            max_size_wallet.pop()
+        else:
+            max_size_wallet.append(action)
     return len(max_size_wallet)
 
 
@@ -59,7 +59,6 @@ def calculate_min_size_wallet_length(price_list_ordered):
     total_cost2 = 0
     for action in price_list_ordered:
         total_cost2 += action[1]
-
         if total_cost2 > 500:
             total_cost2 -= action[1]
         else:
@@ -78,44 +77,45 @@ def create_database(dict_data):
         file.write(dataset.export('csv'))
 
 
-def open_and_convert_csv(csv_data_file):
+def open_convert_and_clean_csv(csv_data_file):
     imported_data = tablib.Dataset().load(open(csv_data_file).read())
-    dataset = {}
+    dataset = []
     for row in imported_data:
-        dataset[row[0]] = (float(row[1]), float(row[2]))
+        if float(row[1]) > 0 and float(row[2]) > 0:
+            dataset.append((row[0], float(row[1]), float(row[2])))
     return dataset
 
 
-base_dataset = {
-    "Action-1": (20, 5),
-    "Action-2": (30, 10),
-    "Action-3": (50, 15),
-    "Action-4": (70, 20),
-    "Action-5": (60, 17),
-    "Action-6": (80, 25),
-    "Action-7": (22, 7),
-    "Action-8": (26, 11),
-    "Action-9": (48, 13),
-    "Action-10": (34, 27),
-    "Action-11": (42, 17),
-    "Action-12": (110, 9),
-    "Action-13": (38, 23),
-    "Action-14": (14, 1),
-    "Action-15": (18, 3),
-    "Action-16": (8, 8),
-    "Action-17": (4, 12),
-    "Action-18": (10, 14),
-    "Action-19": (24, 21),
-    "Action-20": (114, 18)
-}
-create_database(base_dataset)
+# base_dataset = {
+#     "Action-1": (20, 5),
+#     "Action-2": (30, 10),
+#     "Action-3": (50, 15),
+#     "Action-4": (70, 20),
+#     "Action-5": (60, 17),
+#     "Action-6": (80, 25),
+#     "Action-7": (22, 7),
+#     "Action-8": (26, 11),
+#     "Action-9": (48, 13),
+#     "Action-10": (34, 27),
+#     "Action-11": (42, 17),
+#     "Action-12": (110, 9),
+#     "Action-13": (38, 23),
+#     "Action-14": (14, 1),
+#     "Action-15": (18, 3),
+#     "Action-16": (8, 8),
+#     "Action-17": (4, 12),
+#     "Action-18": (10, 14),
+#     "Action-19": (24, 21),
+#     "Action-20": (114, 18)
+# }
+# create_database(base_dataset)
 
-base_dataset = open_and_convert_csv('dataset1_Python+P7.csv')
+base_dataset = open_convert_and_clean_csv('dataset_training.csv')
 
 print(f"dataset size = {len(base_dataset)}")
 
 start_all = time.perf_counter()
-sorted_list = sorted_price_list(convert_dict_to_price_list(base_dataset))
+sorted_list = sorted_price_list(base_dataset)
 print("list sorted")
 print("duration from beginning:")
 print(elapsed_time_formatted(start_all))
@@ -147,8 +147,8 @@ for i in range(min_list_size, (max_list_size + 1)):
         total_cost = 0.0
         # Calculate global ROI of wallet
         for element in combination:
-            total_cost += base_dataset[element][0]
-            total_ROI += base_dataset[element][0]*base_dataset[element][1]/100
+            total_cost += element[1]
+            total_ROI += element[1]*element[2]/100
             final_combination.append(element)
 
         if total_cost <= 500:
