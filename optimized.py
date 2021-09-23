@@ -107,7 +107,7 @@ print(elapsed_time_formatted(start_all))
 base_dataset.sort(key=lambda action: action[2], reverse=True)
 base_dataset = base_dataset[:max_list_size + 2]
 print(len(base_dataset))
-all_combinations = []
+best_combination = (0, 0, 0)
 for i in range(max_list_size, (min_list_size - 1), -1):
     start_number = time.perf_counter()
     print()
@@ -129,12 +129,12 @@ for i in range(max_list_size, (min_list_size - 1), -1):
             total_ROI += element[1] * element[2] / 100
             final_combination.append(element)
 
-        if total_cost <= 500:
+        if total_cost <= 500 and total_ROI > best_combination[2]:
             final_combination_with_ROI = (final_combination, total_cost, total_ROI)
-            all_combinations.append(final_combination_with_ROI)
+            best_combination = final_combination_with_ROI
 
     print(f"résultats {i} :")
-    print(len(all_combinations))
+    print(best_combination)
 
     print(i)
     print("duration:")
@@ -145,24 +145,24 @@ for i in range(max_list_size, (min_list_size - 1), -1):
     print()
 
 print("LAST RESULTS")
-print(len(all_combinations))
+print(best_combination)
 
-all_combinations.sort(key=lambda combi: combi[2], reverse=True)
+# all_combinations.sort(key=lambda combi: combi[2], reverse=True)
 
-print("10 meilleurs :")
-for i in range(0, 10):
-    print(all_combinations[i])
-
-print()
-
-print("10 pires :")
-for i in range(10, 0, -1):
-    print(all_combinations[-i])
-
-print("longueur du meilleur: ")
-print(len(all_combinations[0][0]))
-print("Le grand gagnant est:")
-print(all_combinations[0])
+# print("10 meilleurs :")
+# for i in range(0, 10):
+#     print(all_combinations[i])
+#
+# print()
+#
+# print("10 pires :")
+# for i in range(10, 0, -1):
+#     print(all_combinations[-i])
+#
+# print("longueur du meilleur: ")
+# print(len(all_combinations[0][0]))
+# print("Le grand gagnant est:")
+# print(all_combinations[0])
 print()
 print("total_duration:")
 print(elapsed_time_formatted(start_all))
