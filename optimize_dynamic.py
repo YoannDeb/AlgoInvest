@@ -1,6 +1,33 @@
+import argparse
 import time
-
 import tablib
+
+
+def set_arg():
+    """
+    Initiate argparser argument "--databasefile" to change database file name.
+    :return: The new database's filename, or None if no argument were given.
+    """
+    parser = argparse.ArgumentParser(
+        description="Use a data CSV file and/or max investment amount different "
+                    "from the default one ('dataset1_Python+P7.csv' and '500€')."
+    )
+    parser.add_argument("-d", "--databasefile", help="name of the data CSV file to use")
+    parser.add_argument("-i", "--investment", help="max investment in euros")
+    args = parser.parse_args()
+    return args.databasefile, args.investment
+
+
+def set_max_investment_arg():
+    """
+    Initiate argparser argument "--databasefile" to change database file name.
+    :return: The new database's filename, or None if no argument were given.
+    """
+    parser = argparse.ArgumentParser(
+        description="Use another max investment amount than the one by default (500 €)."
+    )
+    args = parser.parse_args()
+    return args.investment
 
 
 def elapsed_time_formatted(begin_time):
@@ -12,6 +39,7 @@ def elapsed_time_formatted(begin_time):
     return time.strftime(
         "%H:%M:%S", (time.gmtime(time.perf_counter() - begin_time))
     )
+
 
 def open_convert_and_clean_csv(csv_data_file):
     imported_data = tablib.Dataset().load(open(csv_data_file).read())
@@ -48,7 +76,8 @@ def shares_cost_sum(dataset):
 
 
 def best_combination_dynamic(dataset, max_cost):
-    max_cost_in_cents = max_cost * 100
+    # Finding best ROI (return On Investment):
+    max_cost_in_cents = int(max_cost * 100)
     dataset_length = len(dataset)
     matrix = [[0 for x in range(max_cost_in_cents + 1)] for x in range(dataset_length + 1)]
     for action in range(1, dataset_length + 1):
@@ -58,6 +87,7 @@ def best_combination_dynamic(dataset, max_cost):
             else:
                 matrix[action][size] = matrix[action - 1][size]
 
+    # Retrieving best combination from matrix:
     best_combination = []
     budget_remaining = max_cost_in_cents
     while budget_remaining >= 0 and dataset_length >= 0:
@@ -70,22 +100,48 @@ def best_combination_dynamic(dataset, max_cost):
 
 
 def main():
-    start = time.perf_counter()
-    base_dataset = open_convert_and_clean_csv('dataset2_Python+P7.csv')
-    computable_dataset = add_roi_to_dataset(convert_dataset_to_cents(base_dataset))
-    best_roi, combination = best_combination_dynamic(computable_dataset, 500)
-    best_roi /= 100
-    combination.sort(key=lambda action: action[3], reverse=True)
-    shares_cost = shares_cost_sum(combination)/100
-    final_combination = convert_dataset_to_euros(combination)
+    # Retrieve csv_file name an max_cost from argument passed in console:
+    arg_csv_file, arg_max_investment = set_arg()
+    if arg_csv_file:
+        csv_file = arg_csv_file
+    else:
+        csv_file = 'dataset1_Python+P7.csv'
+    if arg_max_investment:
+        max_cost = float(arg_max_investment)
+    else:
+        max_cost = 500.00
 
+    # Retrieve dataset:
+    base_dataset = open_convert_and_clean_csv(csv_file)
+
+    # Retrieve solution:
+    start = time.perf_counter()
+    print()
+    print(f"Processing with file '{csv_file}' containing {len(base_dataset)} shares...")
+    print(f"Maximum investment: {max_cost}€")
+    print("Please wait...")
+    computable_dataset = add_roi_to_dataset(convert_dataset_to_cents(base_dataset))
+    best_roi, combination = best_combination_dynamic(computable_dataset, max_cost)
+
+    # Formatting results:
+    combination.sort(key=lambda share: share[2], reverse=True)
+    final_combination = convert_dataset_to_euros(combination)
+    best_roi /= 100
+    shares_cost = shares_cost_sum(combination)/100
+
+    # Printing results:
+    print()
     print(f"Length of dataset: {len(computable_dataset)}")
     print(f"Duration of Analysis: {elapsed_time_formatted(start)}")
     print()
-    print(f"Best Return on investment after 2 years: {best_roi} €")
-    print(f"Best set of shares ordered by performance = {final_combination}")
+    print(f"Best Return on investment after 2 years: {round(best_roi, 2)}€")
     print(f"Number of shares to buy : {len(final_combination)}")
-    print(f"Total cost: {shares_cost} €")
+    print(f"Total cost: {shares_cost}€")
+    print()
+    print(f"Best set of shares ordered by performance: ")
+    for combination in final_combination:
+        print(f"{combination[0]} | Price: {combination[1]}€ | profit: {combination[2]}%")
+    print()
 
 
 if __name__ == "__main__":
