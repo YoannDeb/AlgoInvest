@@ -1,2 +1,22 @@
 # AlgoInvest
 Training program
+
+## optimized_dynamic:
+
+Adapting backpack problem with shares. Capacity is investment limit. Weight is price of an action. Value is ROI (Return on Investment).
+
+All fiduciary values are converted in cents to avoid floats.
+
+First a matrix is initialized at 0 everywhere, of size : length of the dataset X  max investment.
+
+For every share, for each investment size, is found if the share alone will first fit in the size, if so, if it's ROI is better than the previous solution without it.
+
+Put the best ROI between the two in the matrix.
+
+At the end of the matrix will be the ROI of the best possible "fit".
+
+An algorithm then can find the chosen shares by backtracking the matrix.
+
+We finally, after euros conversion have the best combination possible and the best ROI.
+
+
