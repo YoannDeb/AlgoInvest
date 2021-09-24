@@ -18,18 +18,6 @@ def set_arg():
     return args.databasefile, args.investment
 
 
-def set_max_investment_arg():
-    """
-    Initiate argparser argument "--databasefile" to change database file name.
-    :return: The new database's filename, or None if no argument were given.
-    """
-    parser = argparse.ArgumentParser(
-        description="Use another max investment amount than the one by default (500 €)."
-    )
-    args = parser.parse_args()
-    return args.investment
-
-
 def elapsed_time_formatted(begin_time):
     """
     Calculates difference between begin_time and actual time,
@@ -68,7 +56,7 @@ def add_roi_to_dataset(dataset):
     return [(data[0], data[1], data[2], (data[1] * data[2]) / 100) for data in dataset]
 
 
-def shares_cost_sum(dataset):
+def calculate_shares_cost_sum(dataset):
     cost_sum = 0
     for data in dataset:
         cost_sum += data[1]
@@ -127,7 +115,7 @@ def main():
     combination.sort(key=lambda share: share[2], reverse=True)
     final_combination = convert_dataset_to_euros(combination)
     best_roi /= 100
-    shares_cost = shares_cost_sum(combination)/100
+    shares_cost = calculate_shares_cost_sum(combination) / 100
 
     # Printing results:
     print()
