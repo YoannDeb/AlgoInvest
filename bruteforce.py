@@ -1,5 +1,22 @@
-from itertools import combinations, combinations_with_replacement, permutations
+import argparse
+from itertools import combinations
 import time
+import tablib
+
+
+def set_arg():
+    """
+    Initiate argparser argument "--databasefile" to change database file name.
+    :return: The new database's filename, or None if no argument were given.
+    """
+    parser = argparse.ArgumentParser(
+        description="Use a data CSV file and/or max investment amount different "
+                    "from the default one ('dataset0_training.csv' and '500€')."
+    )
+    parser.add_argument("-d", "--databasefile", help="name of the data CSV file to use")
+    parser.add_argument("-i", "--investment", help="max investment in euros")
+    args = parser.parse_args()
+    return args.databasefile, args.investment
 
 
 def factorielle(n):
@@ -27,120 +44,117 @@ def elapsed_time_formatted(begin_time):
     )
 
 
-base_dataset = {
-    "Action-1": (20, 5),
-    "Action-2": (30, 10),
-    "Action-3": (50, 15),
-    "Action-4": (70, 20),
-    "Action-5": (60, 17),
-    "Action-6": (80, 25),
-    "Action-7": (22, 7),
-    "Action-8": (26, 11),
-    "Action-9": (48, 13),
-    "Action-10": (34, 27),
-    "Action-11": (42, 17),
-    "Action-12": (110, 9),
-    "Action-13": (38, 23),
-    "Action-14": (14, 1),
-    "Action-15": (18, 3),
-    "Action-16": (8, 8),
-    "Action-17": (4, 12),
-    "Action-18": (10, 14),
-    "Action-19": (24, 21),
-    "Action-20": (114, 18)
-}
+def convert_dict_to_price_list(dataset):
+    price_list2 = []
+    for key in dataset:
+        price_list2.append((key, dataset[key][0]))
+    return price_list2
 
-# all_possible_16_combinations = combinations(base_dataset, 20)
 
-# print(all_possible_16_combinations)
-all_combinations = []
-final_combinations = []
-start_all = time.perf_counter()
-for i in range(20, 1, -1):
-    start_number = time.perf_counter()
-    j = i
-    print(i)
-    print(i)
-    print(i)
-    all_possible_16_combinations = combinations(base_dataset, i)
-    all_possible_16_combinations_with_ROI = []
-    for combination in all_possible_16_combinations:
-        # print(combination)
-        total_ROI = 0.0
-        total_cost = 0.0
-        final_combination = []
-        for element in combination:
-            total_ROI += base_dataset[element][0]*base_dataset[element][1]/100
-            total_cost += base_dataset[element][0]
-            final_combination.append(element)
-            # print(total_ROI)
-            # print(total_cost)
-            if total_cost > 500:
-                total_ROI -= base_dataset[element][0] * base_dataset[element][1] / 100
-                total_cost -= base_dataset[element][0]
-                final_combination.pop()
-                # print(total_ROI)
-                # print(total_cost)
-                break
-        all_possible_16_combinations_with_ROI.append((final_combination, total_cost, total_ROI))
+def sorted_price_list(price_list2):
+    price_list2.sort(key=lambda x: x[1])
+    return price_list2
 
-    print(f"resultats {i}")
-    print("avec doublons:")
-    print(len(all_possible_16_combinations_with_ROI))
 
-    # all_possible_16_combinations_with_ROI = list(set(all_possible_16_combinations_with_ROI))
-    possible_16_combinations_with_ROI = []
-    for combination in all_possible_16_combinations_with_ROI:
-        if combination not in possible_16_combinations_with_ROI:
-            possible_16_combinations_with_ROI.append(combination)
+def calculate_max_size_wallet_length(price_list_ordered, max_cost):
+    max_size_wallet = []
+    total_cost2 = 0
+    for action in price_list_ordered:
+        total_cost2 += action[1]
+        if total_cost2 > max_cost:
+            total_cost2 -= action[1]
+        else:
+            max_size_wallet.append(action)
+    return len(max_size_wallet)
 
-    print("sans doublons:")
-    print(len(possible_16_combinations_with_ROI))
 
-    possible_16_combinations_with_ROI.sort(key=lambda combi: combi[2], reverse=True)
+def calculate_min_size_wallet_length(price_list_ordered, max_cost):
+    price_list_ordered.reverse()
+    min_size_wallet = []
+    total_cost2 = 0
+    for action in price_list_ordered:
+        total_cost2 += action[1]
+        if total_cost2 > max_cost:
+            total_cost2 -= action[1]
+        else:
+            min_size_wallet.append(action)
+    price_list_ordered.reverse()
+    return len(min_size_wallet)
 
-    if len(possible_16_combinations_with_ROI) > 10:
-        for j in range(0, 10):
-            print(possible_16_combinations_with_ROI[j])
-        print()
-        for j in range(10, 0, -1):
-            print(possible_16_combinations_with_ROI[-j])
+
+def open_convert_and_clean_csv(csv_data_file):
+    imported_data = tablib.Dataset().load(open(csv_data_file).read())
+    dataset = []
+    for row in imported_data:
+        if float(row[1]) > 0 and float(row[2]) > 0:
+            dataset.append((row[0], float(row[1]), int(row[2])))
+    return dataset
+
+
+def main():
+    # Retrieve csv_file name and max_cost from argument passed in console:
+    arg_csv_file, arg_max_investment = set_arg()
+    if arg_csv_file:
+        csv_file = arg_csv_file
     else:
-        for combination in possible_16_combinations_with_ROI:
-            print(combination)
+        csv_file = 'dataset0_training.csv'
+    if arg_max_investment:
+        max_cost = float(arg_max_investment)
+    else:
+        max_cost = 500.00
+
+    base_dataset = open_convert_and_clean_csv(csv_file)
+
+    start_all = time.perf_counter()
+
+    sorted_list = sorted_price_list(base_dataset)
+    max_list_size = calculate_max_size_wallet_length(sorted_list, max_cost)
+    min_list_size = calculate_min_size_wallet_length(sorted_list, max_cost)
+
     print()
-    print("longueur du meilleur:")
-    print(len(possible_16_combinations_with_ROI[0][0]))
-    all_combinations.extend(possible_16_combinations_with_ROI)
+    print(f"Processing with file '{csv_file}' containing {len(base_dataset)} shares...")
+    print(f"Maximum investment: {max_cost}€")
+    print(f"min found : {min_list_size}")
+    print(f"max found : {max_list_size}")
+    print("Please wait...")
+
+    all_combinations_with_cost_and_roi = []
+    for i in range(min_list_size, (max_list_size + 1)):
+        for combination in combinations(base_dataset, i):
+            total_roi = 0.0
+            total_cost = 0.0
+            # Calculate global ROI of wallet
+            for element in combination:
+                total_cost += element[1]
+                total_roi += (element[1]*element[2])/100
+            # Append it if it is in the investment limit
+            if total_cost <= max_cost:
+                combination_with_cost_and_roi = (combination, total_cost, total_roi)
+                all_combinations_with_cost_and_roi.append(combination_with_cost_and_roi)
+        print(f"{i} length terminated")
+        print(f"Duration of Analysis: {elapsed_time_formatted(start_all)}")
+
+    # Sort results by descending ROI
+    all_combinations_with_cost_and_roi.sort(key=lambda x: x[2], reverse=True)
+
+    best_combination = list(all_combinations_with_cost_and_roi[0][0])
+
+    best_combination.sort(key=lambda x: x[2], reverse=True)
+    print(all_combinations_with_cost_and_roi[0][0])
+    # Printing results:
     print()
-    print("last one i")
-    print(i)
-    print("duration:")
-    print(elapsed_time_formatted(start_number))
+    print(f"Length of dataset: {len(base_dataset)}")
+    print(f"Duration of Analysis: {elapsed_time_formatted(start_all)}")
     print()
-    print("duration from beginning:")
-    print(elapsed_time_formatted(start_all))
+    print(f"Best Return on investment after 2 years: {all_combinations_with_cost_and_roi[0][2]}€")
+    print(f"Number of shares to buy : {len(all_combinations_with_cost_and_roi[0][0])}")
+    print(f"Total cost: {all_combinations_with_cost_and_roi[0][1]}€")
+    print()
+    print(f"Best set of shares ordered by performance: ")
+    for share in best_combination:
+        print(f"{share[0]} | Price: {share[1]}€ | profit: {share[2]}%")
     print()
 
-for combination in all_combinations:
-    if combination not in final_combinations:
-        final_combinations.append(combination)
 
-print("LAST RESULTS")
-print(len(final_combinations))
-
-final_combinations.sort(key=lambda combi: combi[2], reverse=True)
-
-for i in range(0, 10):
-    print(final_combinations[i])
-
-print()
-
-for i in range(1, 10):
-    print(final_combinations[-i])
-
-print("longueur du meilleur")
-print(len(final_combinations[0][0]))
-print()
-print("total_duration:")
-print(elapsed_time_formatted(start_all))
+if __name__ == "__main__":
+    main()
