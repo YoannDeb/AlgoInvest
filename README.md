@@ -3,7 +3,7 @@ Training program
 
 
 ## bruteforce:
-
+### Principle:
 We first found the maximum and minimum length possible with constraints (ie buying the cheapest the most expensive shares within the investment limit)
 
 Then for each possible length, we found all possible combinations.
@@ -16,17 +16,18 @@ The best one is the optimal solution.
 
 All solutions within the constraint have been tested.
 
+### Complexity:
 I = max investment
 n = number of shares
 complexity : O(2^n)
 
 ## optimized:
-
-Adapting backpack problem with shares. Capacity is investment limit. Weight is price of an action. Value is ROI (Return on Investment).
+### Principle:
+Adapting knapsack problem with shares. Capacity is investment limit. Weight is price of an action. Value is ROI (Return on Investment).
 
 All fiduciary values are converted in cents to avoid floats.
 
-First a matrix is initialized at 0 everywhere, of size : length of the dataset X  max investment (in cents).
+First a matrix is initialized at 0 everywhere, of size : length of the dataset * max investment (in cents).
 
 For every share, for each investment size, is found if the share alone will first fit in the size, if so, if it's ROI is better than the previous solution without it.
 
@@ -38,6 +39,7 @@ An algorithm then can find the chosen shares by backtracking the matrix.
 
 We finally, after euros conversion have the best combination possible and the best ROI.
 
+### Complexity:
 I = max investment
 n = number of shares 
 complexity: O(I*n)
