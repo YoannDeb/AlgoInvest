@@ -112,7 +112,7 @@ def main():
     best_roi, combination = best_combination_dynamic(computable_dataset, max_cost)
 
     # Formatting results:
-    combination.sort(key=lambda share: share[2], reverse=True)
+    combination.sort(key=lambda x: x[2], reverse=True)
     final_combination = convert_dataset_to_euros(combination)
     best_roi /= 100
     shares_cost = calculate_shares_cost_sum(combination) / 100
