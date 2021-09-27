@@ -1,7 +1,26 @@
 # AlgoInvest
 Training program
 
-## optimized_dynamic:
+
+## bruteforce:
+
+We first found the maximum and minimum length possible with constraints (ie buying the cheapest the most expensive shares within the investment limit)
+
+Then for each possible length, we found all possible combinations.
+We then calculate the cost and profit of each combination.
+If the cost is less or equal to the max_investment, we keep this combination with it's cost and profit.
+
+Once all possible combinations have been calculated and tested, we sort by descending profit.
+
+The best one is the optimal solution.
+
+All solutions within the constraint have been tested.
+
+I = max investment
+n = number of shares
+complexity : O(2^n)
+
+## optimized:
 
 Adapting backpack problem with shares. Capacity is investment limit. Weight is price of an action. Value is ROI (Return on Investment).
 
@@ -19,4 +38,8 @@ An algorithm then can find the chosen shares by backtracking the matrix.
 
 We finally, after euros conversion have the best combination possible and the best ROI.
 
+I = max investment
+n = number of shares 
+complexity: O(I*n)
+Memory: O(I*n)
 
