@@ -126,9 +126,9 @@ def main():
     print(f"Number of shares to buy : {len(final_combination)}")
     print(f"Total cost: {shares_cost}€")
     print()
-    print(f"Best set of shares ordered by performance: ")
-    for combination in final_combination:
-        print(f"{combination[0]} | Price: {combination[1]}€ | profit: {combination[2]}%")
+    print(f"Best combination of shares ordered by performance: ")
+    for share in final_combination:
+        print(f"{share[0]} | Price: {share[1]}€ | profit: {share[2]}%")
     print()
 
 
