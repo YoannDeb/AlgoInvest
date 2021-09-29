@@ -91,7 +91,7 @@ def best_combination_linear(dataset, max_cost):
     roi = np.array([i[3] for i in dataset])
 
     # Variables de décision
-    best_combination = cvxpy.Variable(len(price), boolean=True)
+    best_combination = cvxpy.Variable((len(price), ), boolean=True)
 
     # Contrainte de poids total
     price_limit = price * best_combination <= max_investment
