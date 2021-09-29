@@ -17,9 +17,8 @@ The best one is the optimal solution.
 All solutions within the constraint have been tested.
 
 ### Complexity:
-I = max investment
 n = number of shares
-complexity : O(2^n)
+Temporal complexity : O(2^n)
 
 ## optimized:
 ### Principle:
@@ -40,8 +39,8 @@ An algorithm then can find the chosen shares by backtracking the matrix.
 We finally, after euros conversion have the best combination possible and the best ROI.
 
 ### Complexity:
-I = max investment
+I = max investment (in cents)
 n = number of shares 
-complexity: O(I*n)
-Memory: O(I*n)
+Temporal complexity: O(I*n)
+Memory complexity: O(I*n)
 
