@@ -68,12 +68,12 @@ def best_combination_dynamic(dataset, max_cost):
     max_cost_in_cents = int(max_cost * 100)
     dataset_length = len(dataset)
     matrix = [[0 for x in range(max_cost_in_cents + 1)] for x in range(dataset_length + 1)]
-    for action in range(1, dataset_length + 1):
-        for size in range(1, max_cost_in_cents + 1):
-            if dataset[action - 1][1] <= size:
-                matrix[action][size] = max(dataset[action - 1][3] + matrix[action - 1][size - dataset[action - 1][1]], matrix[action - 1][size])
+    for share in range(1, dataset_length + 1):
+        for cost in range(1, max_cost_in_cents + 1):
+            if dataset[share - 1][1] <= cost:
+                matrix[share][cost] = max(dataset[share - 1][3] + matrix[share - 1][cost - dataset[share - 1][1]], matrix[share - 1][cost])
             else:
-                matrix[action][size] = matrix[action - 1][size]
+                matrix[share][cost] = matrix[share - 1][cost]
 
     # Retrieving best combination from matrix:
     best_combination = []
