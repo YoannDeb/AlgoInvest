@@ -19,6 +19,7 @@ All solutions within the constraint have been tested.
 ### Complexity:
 n = number of shares
 Temporal complexity : O(2^n)
+Spatial complexity : O(1)
 
 ## optimized:
 ### Principle:
@@ -42,5 +43,5 @@ We finally, after euros conversion have the best combination possible and the be
 I = max investment (in cents)
 n = number of shares 
 Temporal complexity: O(I*n)
-Memory complexity: O(I*n)
+Spatial complexity: O(I*n)
 
