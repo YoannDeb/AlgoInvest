@@ -31,6 +31,12 @@ def elapsed_time_formatted(begin_time):
 
 
 def open_convert_and_clean_csv(csv_data_file):
+    """
+    Just opens a csv data file and returns a list of tuples.
+    One tuple is composed by the name of the share, it's cost in euros and it's profit rate % after two years.
+    :param csv_data_file: Name of the csv file.
+    :return: A list of tuples. One tuple for one share.
+    """
     imported_data = tablib.Dataset().load(open(csv_data_file).read())
     dataset = []
     for row in imported_data:
@@ -40,6 +46,11 @@ def open_convert_and_clean_csv(csv_data_file):
 
 
 def convert_dataset_to_cents(dataset):
+    """
+    Converts prices of all elements of a list of shares from euros to cents.
+    :param dataset: A list of shares in euros.
+    :return: A list of shares in cents.
+    """
     dataset_in_cents = []
     for data in dataset:
         dataset_in_cents.append((data[0], int(data[1] * 100), data[2]))
@@ -47,16 +58,30 @@ def convert_dataset_to_cents(dataset):
 
 
 def convert_combination_in_euros(combination):
+    """
+    Convert prices and of all elements of the list of shares (index 0) of a combination from cents to euros.
+    Converts the total price (index 1) and total return on investment (index 2) of the combination
+    :param combination: A list of 3 elements: A list of shares, the total cost and the total ROI.
+    :return: A combination in the same format but in euros.
+    """
     combination_in_euros = [[], None, None]
-    # for share in combination[0]:
-    #     combination_in_euros[0].append((share[0], (share[1])/100, share[2]))
-    combination_in_euros[0] = [(share[0], (share[1])/100, share[2]) for share in combination[0]]
+    combination_in_euros[0] = [(share[0], share[1]/100, share[2]) for share in combination[0]]
     combination_in_euros[1] = combination[1]/100
     combination_in_euros[2] = combination[2]/100
     return combination_in_euros
 
 
 def main():
+    """
+    Main function.
+    Takes a datafile and max cost from args, and give the solution of the best investment within the max cost limit.
+    Conversion in cents for more precision in calculus.
+    Each possible combination is calculated then tested against the current max profit seen.
+    At the end the best combination is reconverted back in euros, and sorted by profit rate.
+    Results are printed in console, including duration of analysis, total cost, total return on investment,
+        number of shares to buy and finally the list of all shares to buy with details.
+    :return:
+    """
     # Retrieve csv_file name and max_cost from argument passed in console:
     arg_csv_file, arg_max_investment = set_arg()
     if arg_csv_file:
@@ -81,7 +106,7 @@ def main():
     print("Please wait...")
 
     best_combination = [[0], 0, 0]
-    for i in range(len(dataset_in_cents)):
+    for i in range(1, len(dataset_in_cents) + 1):
         for combination in combinations(dataset_in_cents, i):
             total_roi = 0.0
             total_cost = 0.0
