@@ -33,7 +33,7 @@ def elapsed_time_formatted(begin_time):
 def open_convert_and_clean_csv(csv_data_file):
     """
     Just opens a csv data file and returns a list of tuples.
-    One tuple is composed by the name of the share, it's cost in euros and it's profit rate % after two years.
+    One tuple is composed by the name of the share, it's price in euros and it's profit rate % after two years.
     :param csv_data_file: Name of the csv file.
     :return: A list of tuples. One tuple for one share.
     """
@@ -59,7 +59,7 @@ def convert_dataset_to_cents(dataset):
 
 def convert_combination_in_euros(combination):
     """
-    Convert prices and of all elements of the list of shares (index 0) of a combination from cents to euros.
+    Convert prices of all elements of the list of shares (index 0) of a combination from cents to euros.
     Converts the total price (index 1) and total return on investment (index 2) of the combination
     :param combination: A list of 3 elements: A list of shares, the total cost and the total ROI.
     :return: A combination in the same format but in euros.
@@ -74,35 +74,35 @@ def convert_combination_in_euros(combination):
 def main():
     """
     Main function.
-    Takes a datafile and max cost from args, and give the solution of the best investment within the max cost limit.
+    Takes a datafile and max investment from args, and gives the best shares selection
+        and return on investment within the max investment limit.
     Conversion in cents for more precision in calculus.
-    Each possible combination is calculated then tested against the current max profit seen.
+    Each possible combination is calculated then tested against the current max profit previously seen.
     At the end the best combination is reconverted back in euros, and sorted by profit rate.
     Results are printed in console, including duration of analysis, total cost, total return on investment,
         number of shares to buy and finally the list of all shares to buy with details.
-    :return:
     """
-    # Retrieve csv_file name and max_cost from argument passed in console:
+    # Retrieve csv_file name and max_investment from argument passed in console:
     arg_csv_file, arg_max_investment = set_arg()
     if arg_csv_file:
         csv_file = arg_csv_file
     else:
         csv_file = 'dataset2_Python+P7.csv'
     if arg_max_investment:
-        max_cost = float(arg_max_investment)
+        max_investment = float(arg_max_investment)
     else:
-        max_cost = 500.00
+        max_investment = 500.00
 
     base_dataset = open_convert_and_clean_csv(csv_file)
 
     start_all = time.perf_counter()
 
-    max_cost_in_cents = int(max_cost * 100)
+    max_investment_in_cents = int(max_investment * 100)
     dataset_in_cents = convert_dataset_to_cents(base_dataset)
 
     print()
     print(f"Processing with file '{csv_file}' containing {len(base_dataset)} shares...")
-    print(f"Maximum investment: {max_cost}€")
+    print(f"Maximum investment: {max_investment}€")
     print("Please wait...")
 
     best_combination = [[0], 0, 0]
@@ -115,7 +115,7 @@ def main():
                 total_cost += element[1]
                 total_roi += (element[1]*element[2])/100
             # Append it if it is in the investment limit
-            if total_cost <= max_cost_in_cents and total_roi > best_combination[2]:
+            if total_cost <= max_investment_in_cents and total_roi > best_combination[2]:
                 best_combination = [combination, total_cost, total_roi]
         print(f"{i} length terminated")
         print(f"Duration of Analysis: {elapsed_time_formatted(start_all)}")
