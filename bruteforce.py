@@ -41,7 +41,7 @@ def open_convert_and_clean_csv(csv_data_file):
     dataset = []
     for row in imported_data:
         if float(row[1]) > 0 and float(row[2]) > 0:
-            dataset.append((row[0], float(row[1]), int(row[2])))
+            dataset.append((row[0], float(row[1]), float(row[2])))
     return dataset
 
 
@@ -87,7 +87,7 @@ def main():
     if arg_csv_file:
         csv_file = arg_csv_file
     else:
-        csv_file = 'dataset0_training.csv'
+        csv_file = 'dataset2_Python+P7.csv'
     if arg_max_investment:
         max_cost = float(arg_max_investment)
     else:
