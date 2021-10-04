@@ -27,11 +27,11 @@ Adapting knapsack problem with shares. Capacity is investment limit. Weight is p
 
 All fiduciary values are converted in cents to avoid floats.
 
-First a matrix is initialized at 0 everywhere, of size : length of the dataset * max investment (in cents).
+First a matrix is initialized with 0 everywhere, of size : length of the dataset * max investment (in cents).
 
-For every share, for each investment size, is found if the share alone will first fit in the size, if so, if it's ROI is better than the previous solution without it.
+For every share, then for each investment size, is found if the share alone will first fit in the size, if so, if it's ROI is better than the previous solution without it.
 
-Put the best ROI between the two in the matrix.
+Puts the best ROI between the two in the matrix.
 
 At the end of the matrix will be the ROI of the best possible "fit".
 
