@@ -113,22 +113,24 @@ def best_combination_dynamic(dataset, max_investment):
     dataset_length = len(dataset)
     matrix = [[0 for x in range(max_investment_in_cents + 1)] for x in range(dataset_length + 1)]
     for share in range(1, dataset_length + 1):
-        for cost in range(1, max_investment_in_cents + 1):
-            if dataset[share - 1][1] <= cost:
-                matrix[share][cost] = max(dataset[share - 1][3] + matrix[share - 1][cost - dataset[share - 1][1]],
-                                          matrix[share - 1][cost])
+        for budget in range(1, max_investment_in_cents + 1):
+            current_share = dataset[share - 1]
+            if current_share[1] <= budget:
+                matrix[share][budget] = max(current_share[3] + matrix[share - 1][budget - current_share[1]],
+                                            matrix[share - 1][budget])
             else:
-                matrix[share][cost] = matrix[share - 1][cost]
+                matrix[share][budget] = matrix[share - 1][budget]
 
     # Retrieving best combination from matrix:
     best_combination = []
     budget_remaining = max_investment_in_cents
     while budget_remaining >= 0 and dataset_length >= 0:
+        current_share = dataset[dataset_length - 1]
         if matrix[dataset_length][budget_remaining] == \
-                matrix[dataset_length - 1][budget_remaining - dataset[dataset_length - 1][1]]\
-                + dataset[dataset_length - 1][3]:
-            best_combination.append(dataset[dataset_length - 1])
-            budget_remaining -= dataset[dataset_length - 1][1]
+                matrix[dataset_length - 1][budget_remaining - current_share[1]]\
+                + current_share[3]:
+            best_combination.append(current_share)
+            budget_remaining -= current_share[1]
         dataset_length -= 1
 
     return matrix[-1][-1], best_combination
