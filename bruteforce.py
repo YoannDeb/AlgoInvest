@@ -6,8 +6,10 @@ import tablib
 
 def set_arg():
     """
-    Initiate argparser argument "--databasefile" to change database file name.
-    :return: The new database's filename, or None if no argument were given.
+    Initiate argparser arguments :
+    - "--databasefile" to change database file name
+    - "--investment" to change max investment.
+    :return: The new database's filename and the new investment, or None for each if no argument were given.
     """
     parser = argparse.ArgumentParser(
         description="Use a data CSV file and/or max investment amount different "
